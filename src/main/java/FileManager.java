@@ -9,7 +9,12 @@ public class FileManager {
 
     private File cataloOne;
     private File cataloTwo;
-    private ArrayList<File> distinctionList;
+    private ArrayList<File> distinctionList = new ArrayList<File>();
+    private ArrayList<File> uniqueFileList = new ArrayList<File>();
+    private ArrayList<File> allFilesList = new ArrayList<File>();
+    private int countFiles = 0;
+    private File fileOne;
+    private File fileTwo;
 
     public FileManager() {
     }
@@ -17,6 +22,10 @@ public class FileManager {
     public FileManager(File cataloOne, File cataloTwo) {
         this.cataloOne = cataloOne;
         this.cataloTwo = cataloTwo;
+    }
+
+    public int getCountFiles() {
+        return countFiles;
     }
 
     public FileManager(File cataloOne) {
@@ -48,8 +57,8 @@ public class FileManager {
         return distinctionList;
     }
 
-    protected void addAllFileToList(File file) {
-      //  ArrayList<File> arrayList = new ArrayList<File>();
+    protected ArrayList<File> addAllFileToList(File file) {
+
         File [] fileList = file.listFiles();
         for (File entry : fileList)
         {
@@ -58,9 +67,11 @@ public class FileManager {
                 addAllFileToList(entry);
                 continue;
             }
-           // arrayList.add(entry);
-            distinctionList.add(entry);
+            allFilesList.add(entry);
+            countFiles++;
         }
+
+        return allFilesList;
 
 
     }
@@ -80,9 +91,8 @@ public class FileManager {
     }
 
     protected ArrayList searchUniqueFiles(){
-        ArrayList<File> listOne = addFileToList(cataloOne);
-        ArrayList<File> listTwo = addFileToList(cataloTwo);
-        ArrayList<File> not = new ArrayList<File>();
+        ArrayList<File> listOne = addAllFileToList(cataloOne);
+        ArrayList<File> listTwo = addAllFileToList(cataloTwo);
 
             int tmp = 0;
             for (int i = 0; i < listOne.size(); i++) {
@@ -92,7 +102,7 @@ public class FileManager {
                     }else {
                         tmp++;
                         if (tmp==listTwo.size()){
-                            not.add(listOne.get(i));
+                            uniqueFileList.add(listOne.get(i));
                             tmp=0;
                             break;
                         }
@@ -100,24 +110,31 @@ public class FileManager {
             }
         }
 
-        return not;
+        return uniqueFileList;
     }
 
     protected ArrayList<File> diffFiles(){
-        ArrayList<File> listOne = addFileToList(cataloOne);
-        ArrayList<File> listTwo = addFileToList(cataloTwo);
-        ArrayList<File> not = new ArrayList<File>();
+        ArrayList<File> tmplistOne = addAllFileToList(cataloOne);
+        ArrayList<File> listOne = (ArrayList<File>) tmplistOne.clone();
+        allFilesList.clear();
+        ArrayList<File> tmplistTwo = addAllFileToList(cataloTwo);
+        ArrayList<File> listTwo = (ArrayList<File>) tmplistTwo.clone();
+        allFilesList.clear();
 
 
         for (int i = 0; i < listOne.size(); i++) {
+            fileOne = listOne.get(i);
             for (int j = 0; j < listTwo.size(); j++) {
+                fileTwo = listTwo.get(i);
                 if (((listOne.get(i).getName()).equals(listTwo.get(j).getName())) && listOne.get(i).length() != listTwo.get(i).length()){
-                    not.add(listOne.get(i));
+                    distinctionList.add(listOne.get(i));
+                    System.out.println(listOne.get(i));
+
 
                 }
             }
         }
-        return not;
+        return distinctionList;
     }
 /*
     @Override
